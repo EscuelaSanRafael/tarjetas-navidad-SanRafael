@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tarjeta Navideña - Genesis Chandia</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -14,61 +18,77 @@
       min-height: 100vh;
       font-family: Arial, sans-serif;
       background: url('https://www.animatedimages.org/data/media/147/animated-christmas-image-1056.gif') center/cover fixed;
+      overflow: hidden;
     }
 
-    /* Recuadro semitransparente bajo la tarjeta */
+    /* Dimensiones base responsivas */
+    :root {
+      --card-width: clamp(280px, 90vw, 600px);
+      --card-height: calc(var(--card-width) * 2 / 3); /* Proporción 3:2 */
+    }
+
     .overlay {
       position: absolute;
-      width: 600px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.7); /* Negro con 70% opacidad */
+      width: var(--card-width);
+      height: var(--card-height);
+      background: rgba(0, 0, 0, 0.7);
       border-radius: 12px;
       z-index: 1;
     }
 
-    /* Tarjeta */
     .book {
       position: relative;
-      width: 600px;
-      height: 400px;
+      width: var(--card-width);
+      height: var(--card-height);
       overflow: hidden;
       transition: width 0.6s ease;
-      z-index: 2; /* Para que esté sobre el overlay */
+      z-index: 2;
     }
+
     .page {
       position: absolute;
       top: 0;
       left: 0;
-      width: 600px;
-      height: 400px;
+      width: 100%;
+      height: 100%;
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       backface-visibility: hidden;
     }
+
     .front {
       background-image: url('portada.jpg');
       transform: translateX(0);
       transition: transform 0.6s ease, opacity 0.6s ease;
     }
+
     .back {
       background-image: url('reverso.jpg');
       transform: translateX(0);
       transition: transform 0.6s ease, opacity 0.6s ease;
     }
+
     .inside {
-      width: 1200px;
+      width: 200%;
       display: flex;
     }
-    .inside .left {
-      width: 600px;
-      height: 400px;
-      background: url('interior_izq.jpg') center/contain no-repeat;
-    }
+
+    .inside .left,
     .inside .right {
-      width: 600px;
-      height: 400px;
-      background: url('interior_der.jpg') center/contain no-repeat;
+      width: 50%;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .inside .left {
+      background-image: url('interior_izq.jpg');
+    }
+
+    .inside .right {
+      background-image: url('interior_der.jpg');
     }
 
     /* Animaciones */
@@ -76,26 +96,31 @@
       transform: rotateY(-90deg) scale(0.9);
       opacity: 0;
     }
+
     .flipping-in {
       transform: rotateY(90deg) scale(0.9);
       opacity: 0;
       animation: flipIn 0.6s forwards;
     }
+
     @keyframes flipIn {
       to {
         transform: rotateY(0deg) scale(1);
         opacity: 1;
       }
     }
+
+    /* Asegurar que no se desborde en móviles */
+    @media (max-width: 480px) {
+      :root {
+        --card-width: clamp(260px, 95vw, 320px);
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Fondo: ya está en body -->
-
-  <!-- Recuadro semitransparente -->
   <div class="overlay"></div>
 
-  <!-- Tarjeta interactiva -->
   <div class="book" id="book">
     <div class="page front" id="front"></div>
     <div class="page inside" id="inside" style="display: none;">
@@ -114,13 +139,18 @@
       const back = document.getElementById('back');
       const book = document.getElementById('book');
 
+      // Limpiar clases de animación anteriores
+      front.classList.remove('flipping-in');
+      inside.classList.remove('flipping-in', 'flipping-out');
+      back.classList.remove('flipping-in');
+
       if (state === 0) {
         // Portada → Interior
         front.classList.add('flipping-out');
         setTimeout(() => {
           front.style.display = 'none';
           inside.style.display = 'flex';
-          book.style.width = '1200px';
+          book.style.width = 'calc(var(--card-width) * 2)';
           inside.classList.add('flipping-in');
           state = 1;
         }, 300);
@@ -130,7 +160,7 @@
         setTimeout(() => {
           inside.style.display = 'none';
           back.style.display = 'block';
-          book.style.width = '600px';
+          book.style.width = 'var(--card-width)';
           back.classList.add('flipping-in');
           state = 2;
         }, 300);
@@ -141,8 +171,8 @@
           back.style.display = 'none';
           front.style.display = 'block';
           front.classList.remove('flipping-out');
-          front.style.transform = 'translateX(0)';
-          front.style.opacity = '1';
+          front.style.transform = '';
+          front.style.opacity = '';
           state = 0;
         }, 300);
       }
