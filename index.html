@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <!-- Viewport fijo: no zoom, ancho controlado -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Tarjeta Navideña - Genesis Chandia</title>
   <style>
@@ -20,13 +19,12 @@
       font-family: Arial, sans-serif;
       background: url('https://www.animatedimages.org/data/media/147/animated-christmas-image-1056.gif') center/cover fixed;
       overflow: hidden;
-      padding: 10px; /* Margen seguro en todos los lados */
+      padding: 12px;
     }
 
-    /* Tamaño máximo reducido significativamente */
     :root {
-      --card-width: min(95vw, 320px); /* Máximo 320px, casi siempre 95% del viewport */
-      --card-height: calc(var(--card-width) * 0.65); /* Más compacto: proporción ~1.54:1 */
+      --card-width: min(95vw, 320px);
+      --card-height: calc(var(--card-width) * 0.65);
     }
 
     .overlay {
@@ -74,19 +72,23 @@
       display: flex;
     }
 
-    .inside .left {
-      width: 50%;
-      height: 100%;
-      background: url('interior_izq.jpg') center/contain no-repeat;
-    }
-
+    .inside .left,
     .inside .right {
       width: 50%;
       height: 100%;
-      background: url('interior_der.jpg') center/contain no-repeat;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
-    /* Animaciones */
+    .inside .left {
+      background-image: url('interior_izq.jpg');
+    }
+
+    .inside .right {
+      background-image: url('interior_der.jpg');
+    }
+
     .flipping-out {
       transform: rotateY(-90deg) scale(0.9);
       opacity: 0;
@@ -105,7 +107,6 @@
       }
     }
 
-    /* Extra: asegurar que no haya scroll en móviles */
     @media (max-width: 400px) {
       :root {
         --card-width: min(92vw, 300px);
@@ -129,16 +130,23 @@
   <script>
     let state = 0;
 
+    function getCardWidth() {
+      // Obtiene el ancho actual de la tarjeta en píxeles reales
+      const book = document.getElementById('book');
+      const style = getComputedStyle(book);
+      return parseFloat(style.getPropertyValue('width'));
+    }
+
     document.getElementById('book').onclick = function() {
       const front = document.getElementById('front');
       const inside = document.getElementById('inside');
       const back = document.getElementById('back');
       const book = document.getElementById('book');
 
-      // Reset clases
-      [front, inside, back].forEach(el => {
-        el.classList.remove('flipping-in', 'flipping-out');
-      });
+      // Limpiar clases anteriores
+      front.classList.remove('flipping-in');
+      inside.classList.remove('flipping-in', 'flipping-out');
+      back.classList.remove('flipping-in');
 
       if (state === 0) {
         // Portada → Interior
@@ -146,7 +154,8 @@
         setTimeout(() => {
           front.style.display = 'none';
           inside.style.display = 'flex';
-          book.style.width = `calc(var(--card-width) * 2)`;
+          const cardWidth = getCardWidth();
+          book.style.width = (cardWidth * 2) + 'px';
           inside.classList.add('flipping-in');
           state = 1;
         }, 300);
@@ -156,7 +165,7 @@
         setTimeout(() => {
           inside.style.display = 'none';
           back.style.display = 'block';
-          book.style.width = 'var(--card-width)';
+          book.style.width = getCardWidth() / 2 + 'px'; // volver al ancho original
           back.classList.add('flipping-in');
           state = 2;
         }, 300);
@@ -168,6 +177,8 @@
           front.style.display = 'block';
           front.style.transform = '';
           front.style.opacity = '';
+          // Restaurar ancho original
+          book.style.width = '';
           state = 0;
         }, 300);
       }
