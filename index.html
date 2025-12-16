@@ -2,36 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Viewport fijo: no zoom, ancho controlado -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Tarjeta Navideña - Genesis Chandia</title>
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 50vh;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
       background: url('https://www.animatedimages.org/data/media/147/animated-christmas-image-1056.gif') center/cover fixed;
       overflow: hidden;
+      padding: 10px; /* Margen seguro en todos los lados */
     }
 
-    /* Dimensiones base responsivas */
+    /* Tamaño máximo reducido significativamente */
     :root {
-      --card-width: clamp(140px, 45vw, 300px);
-      --card-height: calc(var(--card-width) * 2 / 3); /* Proporción 3:2 */
+      --card-width: min(95vw, 320px); /* Máximo 320px, casi siempre 95% del viewport */
+      --card-height: calc(var(--card-width) * 0.65); /* Más compacto: proporción ~1.54:1 */
     }
 
     .overlay {
       position: absolute;
       width: var(--card-width);
       height: var(--card-height);
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       border-radius: 12px;
       z-index: 1;
     }
@@ -43,6 +45,8 @@
       overflow: hidden;
       transition: width 0.6s ease;
       z-index: 2;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .page {
@@ -59,14 +63,10 @@
 
     .front {
       background-image: url('portada.jpg');
-      transform: translateX(0);
-      transition: transform 0.6s ease, opacity 0.6s ease;
     }
 
     .back {
       background-image: url('reverso.jpg');
-      transform: translateX(0);
-      transition: transform 0.6s ease, opacity 0.6s ease;
     }
 
     .inside {
@@ -74,21 +74,16 @@
       display: flex;
     }
 
-    .inside .left,
+    .inside .left {
+      width: 50%;
+      height: 100%;
+      background: url('interior_izq.jpg') center/contain no-repeat;
+    }
+
     .inside .right {
       width: 50%;
       height: 100%;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
-    .inside .left {
-      background-image: url('interior_izq.jpg');
-    }
-
-    .inside .right {
-      background-image: url('interior_der.jpg');
+      background: url('interior_der.jpg') center/contain no-repeat;
     }
 
     /* Animaciones */
@@ -110,10 +105,11 @@
       }
     }
 
-    /* Asegurar que no se desborde en móviles */
-    @media (max-width: 60px) {
+    /* Extra: asegurar que no haya scroll en móviles */
+    @media (max-width: 400px) {
       :root {
-        --card-width: clamp(130px, 42vw, 180px);
+        --card-width: min(92vw, 300px);
+        --card-height: calc(var(--card-width) * 0.62);
       }
     }
   </style>
@@ -131,7 +127,7 @@
   </div>
 
   <script>
-    let state = 0; // 0: portada, 1: interior, 2: reverso
+    let state = 0;
 
     document.getElementById('book').onclick = function() {
       const front = document.getElementById('front');
@@ -139,10 +135,10 @@
       const back = document.getElementById('back');
       const book = document.getElementById('book');
 
-      // Limpiar clases de animación anteriores
-      front.classList.remove('flipping-in');
-      inside.classList.remove('flipping-in', 'flipping-out');
-      back.classList.remove('flipping-in');
+      // Reset clases
+      [front, inside, back].forEach(el => {
+        el.classList.remove('flipping-in', 'flipping-out');
+      });
 
       if (state === 0) {
         // Portada → Interior
@@ -150,7 +146,7 @@
         setTimeout(() => {
           front.style.display = 'none';
           inside.style.display = 'flex';
-          book.style.width = 'calc(var(--card-width) * 2)';
+          book.style.width = `calc(var(--card-width) * 2)`;
           inside.classList.add('flipping-in');
           state = 1;
         }, 300);
@@ -170,7 +166,6 @@
         setTimeout(() => {
           back.style.display = 'none';
           front.style.display = 'block';
-          front.classList.remove('flipping-out');
           front.style.transform = '';
           front.style.opacity = '';
           state = 0;
@@ -180,4 +175,3 @@
   </script>
 </body>
 </html>
-
