@@ -15,7 +15,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      min-height: 50vh;
       font-family: Arial, sans-serif;
       background: url('https://www.animatedimages.org/data/media/147/animated-christmas-image-1056.gif') center/cover fixed;
       overflow: hidden;
@@ -23,7 +23,7 @@
 
     /* Dimensiones base responsivas */
     :root {
-      --card-width: clamp(280px, 90vw, 600px);
+      --card-width: clamp(140px, 45vw, 300px);
       --card-height: calc(var(--card-width) * 2 / 3); /* Proporción 3:2 */
     }
 
@@ -111,9 +111,9 @@
     }
 
     /* Asegurar que no se desborde en móviles */
-    @media (max-width: 480px) {
+    @media (max-width: 60px) {
       :root {
-        --card-width: clamp(260px, 95vw, 320px);
+        --card-width: clamp(130px, 42vw, 180px);
       }
     }
   </style>
@@ -180,3 +180,4 @@
   </script>
 </body>
 </html>
+
