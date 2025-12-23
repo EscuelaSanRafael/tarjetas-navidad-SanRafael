@@ -1,1 +1,158 @@
-asdasdasdasd
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tarjeta Navideña - Genesis Chandia</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background-image: url('fondo.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Recuadro semitransparente bajo la tarjeta */
+    .overlay {
+      position: absolute;
+      width: 600px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.7); /* Negro con 70% opacidad */
+      border-radius: 12px;
+      z-index: 1;
+    }
+
+    /* Tarjeta */
+    .book {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      overflow: hidden;
+      transition: width 0.6s ease;
+      z-index: 2; /* Para que esté sobre el overlay */
+    }
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 600px;
+      height: 400px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      backface-visibility: hidden;
+    }
+    .front {
+      background-image: url('portada.jpg');
+      transform: translateX(0);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+    .back {
+      background-image: url('reverso.jpg');
+      transform: translateX(0);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+    .inside {
+      width: 1200px;
+      display: flex;
+    }
+    .inside .left {
+      width: 600px;
+      height: 400px;
+      background: url('interior_izq.jpg') center/contain no-repeat;
+    }
+    .inside .right {
+      width: 600px;
+      height: 400px;
+      background: url('interior_der.jpg') center/contain no-repeat;
+    }
+
+    /* Animaciones */
+    .flipping-out {
+      transform: rotateY(-90deg) scale(0.9);
+      opacity: 0;
+    }
+    .flipping-in {
+      transform: rotateY(90deg) scale(0.9);
+      opacity: 0;
+      animation: flipIn 0.6s forwards;
+    }
+    @keyframes flipIn {
+      to {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fondo: ya está en body -->
+
+  <!-- Recuadro semitransparente -->
+  <div class="overlay"></div>
+
+  <!-- Tarjeta interactiva -->
+  <div class="book" id="book">
+    <div class="page front" id="front"></div>
+    <div class="page inside" id="inside" style="display: none;">
+      <div class="left"></div>
+      <div class="right"></div>
+    </div>
+    <div class="page back" id="back" style="display: none;"></div>
+  </div>
+
+  <script>
+    let state = 0; // 0: portada, 1: interior, 2: reverso
+
+    document.getElementById('book').onclick = function() {
+      const front = document.getElementById('front');
+      const inside = document.getElementById('inside');
+      const back = document.getElementById('back');
+      const book = document.getElementById('book');
+
+      if (state === 0) {
+        // Portada → Interior
+        front.classList.add('flipping-out');
+        setTimeout(() => {
+          front.style.display = 'none';
+          inside.style.display = 'flex';
+          book.style.width = '1200px';
+          inside.classList.add('flipping-in');
+          state = 1;
+        }, 300);
+      } else if (state === 1) {
+        // Interior → Reverso
+        inside.classList.add('flipping-out');
+        setTimeout(() => {
+          inside.style.display = 'none';
+          back.style.display = 'block';
+          book.style.width = '600px';
+          back.classList.add('flipping-in');
+          state = 2;
+        }, 300);
+      } else {
+        // Reverso → Portada
+        back.classList.add('flipping-out');
+        setTimeout(() => {
+          back.style.display = 'none';
+          front.style.display = 'block';
+          front.classList.remove('flipping-out');
+          front.style.transform = 'translateX(0)';
+          front.style.opacity = '1';
+          state = 0;
+        }, 300);
+      }
+    };
+  </script>
+</body>
+</html>
+
+
+
